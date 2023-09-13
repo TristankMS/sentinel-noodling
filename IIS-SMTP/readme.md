@@ -2,6 +2,8 @@ Microsoft Sentinel IIS SMTP noodles
 ===================================
 Noodling about with SMTP logging and Azure Monitor Logs / Microsoft Sentinel.
 
+**Note:** This project is **not** a Microsoft product and support is not formally provided!
+
 ## Tools provided
 
 This folder contains:
@@ -11,9 +13,13 @@ This folder contains:
 
 This should be enough to get about as much as the IIS SMTP service is prepared to offer you, which can then be used for correlation and enrichment with more useful and interesting tables in Sentinel (IdentityInfo, ThreatIntelligenceIndicators, any other mail tables you're ingesting...)
 
+![DCR, DCE and LAW need to be in-region](img/smtpsvc-outputsample.png)
+
 ## IIS SMTP Log Data Collection Rule
 
 **Note**: **A Data Collection Endpoint (DCE) is needed for custom text log ingestion, so if you don't have one already, set one up first**, in the same region as your Log Analytics Workspace. This is the same region you'll need to deploy the DCR to: While the resources being collected *from* can be anywhere, the DCE must be in the same location as the Log Analytics Workspace and the Data Collection Rule. 
+
+![DCR, DCE and LAW need to be in-region](img/dce-dcr-law.png)
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FTristankMS%2Fsentinel-noodling%2Fmain%2FIIS-SMTP%2FSMTP-DCR-Template.json)
 
