@@ -1,0 +1,28 @@
+// Assumes ALL FIELDS have been enabled in IIS SMTP logging and will be instantly confused if any lower-than-16-numbered items are not.
+// So enable ALL advanced W3C logging fields in SMTP Virtual Server configuration
+// #Fields: date time c-ip cs-username s-sitename s-computername s-ip s-port cs-method 
+// cs-uri-stem cs-uri-query sc-status sc-win32-status sc-bytes cs-bytes time-taken cs-version 
+// cs-host cs(User-Agent) cs(Cookie) cs(Referer)     // last 3 unused
+SMTPSVC_CL 
+| where RawData !startswith_cs "#"
+| extend SplitData = split(RawData," ")
+| extend TimeLogged = todatetime(strcat(SplitData[0], " ", SplitData[1]))
+| extend cIP = SplitData[2]
+| extend csUserName = SplitData[3]
+| extend sSiteName = SplitData[4]
+| extend Computer = SplitData[5]
+| extend sIP = SplitData[6]
+| extend sPort = SplitData[7]
+| extend csMethod = SplitData[8]
+| extend csUriStem = SplitData[9]
+| extend csUriQuery = SplitData[10]
+| extend scStatus = SplitData[11]
+| extend scWin32Status = SplitData[12]
+| extend scBytes = SplitData[13]
+| extend csBytes = SplitData[14]
+| extend TimeTaken = SplitData[15]
+| extend csVersion = SplitData[16]
+| extend csHost = SplitData[17]
+| project-rename TimeIngested=TimeGenerated
+| project-rename TimeGenerated = TimeLogged
+| project-away SplitData, RawData, TenantId, Type

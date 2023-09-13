@@ -1,0 +1,107 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dataCollectionRuleName": {
+            "metadata": {
+                "description": "No spaces (eg. dcr-win-iis-smtp)"
+            },
+            "defaultValue": "dcr-win-iis-smtp",
+            "type": "string"
+        },
+        "didYouKnow":{
+            "type": "string",
+            "defaultValue": "The DCE and DCR must be in the same region as the LAW. The source can be anywhere."
+        },
+        "dataCollectionEndpoint": {
+            "metadata": {
+                "description": "full resource ID of DCE. ID is copiable from Overview -> JSON View -> id"
+            },
+            "defaultValue": "/subscriptions/ID/resourceGroups/RG/providers/Microsoft.Insights/dataCollectionEndpoints/dce-blah",
+            "type": "string"
+        },
+        "workspaceId": {
+            "metadata": {
+                "description": "full resource ID of Log Analytics workspace (/subscriptions/etc) - value from Properties"
+            },
+            "defaultValue": "/subscriptions/ID/resourceGroups/RG/providers/Microsoft.OperationalInsights/workspaces/sentinel-ws",
+            "type": "string"
+        }
+    },
+    "variables": {
+		"ruleName":"smtp--0001"
+	},
+    "resources": [
+        {
+            "type": "Microsoft.Insights/dataCollectionRules",
+            "apiVersion": "2022-06-01",
+            "name": "[parameters('dataCollectionRuleName')]",
+            "location": "[resourceGroup().location]",
+            "kind": "Windows",
+            "properties": {
+                "dataCollectionEndpointId": "[parameters('dataCollectionEndpoint')]",
+                "streamDeclarations": {
+                    "Custom-SMTPSVC_CL": {
+                        "columns": [
+                            {
+                                "name": "TimeGenerated",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "RawData",
+                                "type": "string"
+                            }
+                        ]
+                    }
+                },
+                "dataSources": {
+                    "logFiles": [
+                        {
+                            "streams": [
+                                "Custom-SMTPSVC_CL"
+                            ],
+                            "filePatterns": [
+                                "C:\\Windows\\System32\\LogFiles\\SMTPSVC1\\e*.log",
+                                "C:\\Windows\\System32\\LogFiles\\SMTPSVC2\\e*.log",
+                                "C:\\Windows\\System32\\LogFiles\\SMTPSVC3\\e*.log",
+                                "C:\\Windows\\System32\\LogFiles\\SMTPSVC4\\e*.log",
+                                "C:\\Windows\\System32\\LogFiles\\SMTPSVC5\\e*.log",
+                                "C:\\Windows\\System32\\LogFiles\\SMTPSVC6\\e*.log",
+                                "C:\\Windows\\System32\\LogFiles\\SMTPSVC7\\e*.log",
+                                "C:\\Windows\\System32\\LogFiles\\SMTPSVC8\\e*.log",
+                                "C:\\Windows\\System32\\LogFiles\\SMTPSVC9\\e*.log"
+                            ],
+                            "format": "text",
+                            "settings": {
+                                "text": {
+                                    "recordStartTimestampFormat": "ISO 8601"
+                                }
+                            },
+                            "name": "SMTPSVC_CL"
+                        }
+                    ]
+                },
+                "destinations": {
+                    "logAnalytics": [
+                        {
+                            "workspaceResourceId": "[parameters('workspaceId')]",
+                            "name": "[variables('ruleName')]"
+                        }
+                    ]
+                },
+                "dataFlows": [
+                    {
+                        "streams": [
+                            "Custom-SMTPSVC_CL"
+                        ],
+                        "destinations": [
+                            "[variables('ruleName')]"
+                        ],
+                        "transformKql": "source",
+                        "outputStream": "Custom-SMTPSVC_CL"
+                    }
+                ]
+            }
+        }
+    ]
+}

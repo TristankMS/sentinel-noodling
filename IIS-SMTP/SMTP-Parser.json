@@ -1,0 +1,46 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-08-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "Workspace": {
+        "type": "string",
+        "metadata": {
+          "description": "The Microsoft Sentinel workspace into which the function will be deployed. Has to be in the selected Resource Group."
+        }
+      },
+      "WorkspaceRegion": {
+        "type": "string",
+        "defaultValue": "[resourceGroup().location]",
+        "metadata": {
+          "description": "The region of the selected workspace. The default value will use the Region selection above."
+        }
+      }
+    },
+   "resources": [
+      {
+        "type": "Microsoft.OperationalInsights/workspaces",
+        "apiVersion": "2017-03-15-preview",
+        "name": "[parameters('Workspace')]",
+        "location": "[parameters('WorkspaceRegion')]",
+        "resources": [
+          {
+            "type": "savedSearches",
+            "apiVersion": "2020-08-01",
+            "name": "SMTPSVC",
+            "dependsOn": [
+              "[concat('Microsoft.OperationalInsights/workspaces/', parameters('Workspace'))]"
+            ],
+            "properties": {
+              "etag": "*",
+              "displayName": "IIS SMTP basic parser",
+              "category": "Security",
+              "FunctionAlias": "SMTPSVC",
+              "query": "// Assumes ALL FIELDS have been enabled in IIS SMTP logging and will be instantly confused if they're not.\r\n// So enable ALL advanced W3C logging fields in SMTP Virtual Server configuration\r\n// #Fields: date time c-ip cs-username s-sitename s-computername s-ip s-port cs-method cs-uri-stem cs-uri-query sc-status sc-win32-status sc-bytes cs-bytes time-taken cs-version cs-host cs(User-Agent) cs(Cookie) cs(Referer) \r\nSMTPSVC_CL \r\n| where RawData !startswith_cs \"#\"\r\n| extend SplitData = split(RawData,\" \")\r\n| extend TimeLogged = todatetime(strcat(SplitData[0], \" \", SplitData[1]))\r\n| extend cIP = SplitData[2]\r\n| extend csUserName = SplitData[3]\r\n| extend sSiteName = SplitData[4]\r\n| extend Computer = SplitData[5]\r\n| extend sIP = SplitData[6]\r\n| extend sPort = SplitData[7]\r\n| extend csMethod = SplitData[8]\r\n| extend csUriStem = SplitData[9]\r\n| extend csUriQuery = SplitData[10]\r\n| extend scStatus = SplitData[11]\r\n| extend scWin32Status = SplitData[12]\r\n| extend scBytes = SplitData[13]\r\n| extend csBytes = SplitData[14]\r\n| extend TimeTaken = SplitData[15]\r\n| extend csVersion = SplitData[16]\r\n| extend csHost = SplitData[17]\r\n| project-rename TimeIngested=TimeGenerated\r\n| project-rename TimeGenerated = TimeLogged\r\n| project-away SplitData, RawData, TenantId, Type\r\n",
+              "version": 1
+             }
+          }
+        ]
+      }
+    ]
+  }
+  
