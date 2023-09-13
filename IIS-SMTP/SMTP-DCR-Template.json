@@ -11,20 +11,20 @@
         },
         "didYouKnow":{
             "type": "string",
-            "defaultValue": "A DCE and DCR must be in same region as LAW. Source can be anywhere."
+            "defaultValue": "DCE, DCR, LAW must be in-region. Target Resources can be anywhere."
         },
         "dataCollectionEndpoint": {
             "metadata": {
-                "description": "short Name of DCE. Must exist in target RG, same location as LAW + DCR"
+                "description": "full resource ID of DCE. ID is copiable from Overview -> JSON View -> id"
             },
-            "defaultValue": "existing-dce-name",
+            "defaultValue": "/subscriptions/ID/resourceGroups/RG/providers/Microsoft.Insights/dataCollectionEndpoints/dce-blah",
             "type": "string"
         },
-        "workspaceName":{
+        "workspaceId": {
             "metadata": {
-                "description": "Just the workspace name"
+                "description": "full resource ID of Log Analytics workspace (/subscriptions/etc) - value from Properties"
             },
-            "defaultValue": "sentinel-ws",
+            "defaultValue": "/subscriptions/ID/resourceGroups/RG/providers/Microsoft.OperationalInsights/workspaces/sentinel-ws",
             "type": "string"
         }
     },
@@ -39,7 +39,7 @@
             "location": "[resourceGroup().location]",
             "kind": "Windows",
             "properties": {
-                "dataCollectionEndpointId": "[concat(resourceGroup().id,'/providers/Microsoft.Insights/dataCollectionEndpoints/',parameters('dataCollectionEndpoint'))]",
+                "dataCollectionEndpointId": "[parameters('dataCollectionEndpoint')]",
                 "streamDeclarations": {
                     "Custom-SMTPSVC_CL": {
                         "columns": [
@@ -84,7 +84,7 @@
                 "destinations": {
                     "logAnalytics": [
                         {
-                            "workspaceResourceId": "[concat(resourceGroup().id, '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]",
+                            "workspaceResourceId": "[parameters('workspaceId')]",
                             "name": "[variables('ruleName')]"
                         }
                     ]
