@@ -13,7 +13,7 @@ This should be enough to get about as much as the IIS SMTP service is prepared t
 
 ## IIS SMTP Log Data Collection Rule
 
-**Note**: A Data Collection Endpoint (DCE) is needed for custom text log ingestion, so if you don't have one already, set one up first, in the same region as your Log Analytics Workspace. This is the same region you'll need to deploy the DCR to: While the resources being collected *from* can be anywhere, the DCE must be in the same location as the Log Analytics Workspace and the Data Collection Rule. 
+**Note**: **A Data Collection Endpoint (DCE) is needed for custom text log ingestion, so if you don't have one already, set one up first**, in the same region as your Log Analytics Workspace. This is the same region you'll need to deploy the DCR to: While the resources being collected *from* can be anywhere, the DCE must be in the same location as the Log Analytics Workspace and the Data Collection Rule. 
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FTristankMS%2Fsentinel-noodling%2Fmain%2FIIS-SMTP%2FSMTP-DCR-Template.json)
 
