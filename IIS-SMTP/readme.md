@@ -11,7 +11,7 @@ This folder contains:
 
 This should be enough to get about as much as the IIS SMTP service is prepared to offer you, which can then be used for correlation and enrichment with more useful and interesting tables in Sentinel (IdentityInfo, ThreatIntelligenceIndicators, any other mail tables you're ingesting...)
 
-## Data Collection Rule
+## IIS SMTP Log Data Collection Rule
 
 **Note**: A Data Collection Endpoint (DCE) is needed for custom text log ingestion, so if you don't have one already, set one up first, in the same region as your Log Analytics Workspace. This is the same region you'll need to deploy the DCR to: While the resources being collected *from* can be anywhere, the DCE must be in the same location as the Log Analytics Workspace and the Data Collection Rule. 
 
@@ -34,7 +34,7 @@ If you're not getting data:
   Using PowerShell locally:
   - `Send-MailMessage -SmtpServer localhost -From "test-$($env:Computername)@example.com" -To "user@example.com" -Subject "Test from $($env:Computername) $(++$i)"  -Body "Just checking" # NB probably helps for the "To" address to work or be homed on the server if it's not a relay...`
 
-## SMTPSVC Parser Function
+## SMTPSVC Parser Function for SMTPSVC_CL
 
 Can be deployed to any workspace at any time. (Of course won't *work* until the SMTPSVC_CL table is present...)
 
