@@ -9,7 +9,7 @@ This folder contains:
   - DCR directs logs to a custom table called `SMTPSVC_CL`, without any source transformation
 - A basic **parser function for Log Analytics (SMTPSVC)** which splits and parses SMTPSVC_CL into named columns
 
-This should be enough to get about as much as the SMTP service is prepared to offer you, which can then be used for correlation and enrichment with more useful and interesting tables in Sentinel (IdentityInfo, ThreatIntelligenceIndicators, any other mail tables you're ingesting...)
+This should be enough to get about as much as the IIS SMTP service is prepared to offer you, which can then be used for correlation and enrichment with more useful and interesting tables in Sentinel (IdentityInfo, ThreatIntelligenceIndicators, any other mail tables you're ingesting...)
 
 ## Data Collection Rule
 
@@ -59,6 +59,8 @@ Once maxed out, you still *don't* get *amazing* levels of detail, but it's enoug
 When the SMTP service is installed, it drags in IIS 6 compatibility mode, and the InetMgr.msc console, but not the ADSUTIL.vbs or related admin scripts by default. You need to add those manually or work around their non-presence.
 
 ## Setting IIS SMTP "sites" to log
+
+On the IIS SMTP Server, you've got a few options, ranging from easy to fiddly:
 
 ### WMI
 
