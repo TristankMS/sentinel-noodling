@@ -1,18 +1,20 @@
 # ZScaler Private Access - AMA-based Solution for Microsoft Sentinel
-# Blame: TristanK
-# v1.0 - 2024-02-14
-# v1.01 - 2024-02-21 - note *possible* need to modify Syslogesque output format to include 1 i.e. <PRI>1 Date etc
-# v1.02 - 2024-02-26 - correct ProcessName == 'zpalss'
-# v1.03 - 2024-02-26 - add niceness to ARM template
-# v1.04 - 2024-02-26 - add DCR location variable (resource group for deployment may not be the right option)
-# v1.05 - 2024-03-05 - Interim troubleshooting update with DCR modified to include original message on Unknown events
-# v1.06 - 2024-04-23 - Update with troubleshooting results incorporated - split DCR transformation for `zpaaudit` and `zpalss`
-# v1.07 - 2024-05-27 - Final
-# v1.08 - 2024-06-12 - Removed syslog options to simplify solution - just goes direct to AMA now. May re-document those later.
+- Blame: TristanK
+- v1.0 - 2024-02-14
+- v1.01 - 2024-02-21 - note *possible* need to modify Syslogesque output format to include 1 i.e. <PRI>1 Date etc
+- v1.02 - 2024-02-26 - correct ProcessName == 'zpalss'
+- v1.03 - 2024-02-26 - add niceness to ARM template
+- v1.04 - 2024-02-26 - add DCR location variable (resource group for deployment may not be the right option)
+- v1.05 - 2024-03-05 - Interim troubleshooting update with DCR modified to include original message on Unknown events
+- v1.06 - 2024-04-23 - Update with troubleshooting results incorporated - split DCR transformation for `zpaaudit` and `zpalss`
+- v1.07 - 2024-05-27 - Final
+- v1.08 - 2024-06-12 - Removed syslog options to simplify solution - just goes direct to AMA now. May re-document those later.
 
 # Interim Solution for ZScaler Private Access with Microsoft Sentinel
 
-DISCLAIMER: This is all based on second- or third-hand knowledge of ZPA, and reading the ZPA docs, trying things, making mistakes, and fixing them. Use at your own risk. No warranty, express or implied, is conferred through this document. Trademarks are those of their respective owners, used without permission. Cheques may not be honoured.
+_Extra disclaimer: This is all based on second- or third-hand knowledge of ZPA, and reading the ZPA docs, trying things, making mistakes, and fixing them. Use at your own risk. No warranty, express or implied, is conferred through this document. Trademarks are those of their respective owners, used without permission. Cheques may not be honoured._
+
+Tip: having published it... This doc looks better viewed as Markdown!
 
 # Background
 
@@ -29,9 +31,10 @@ The existing ZScaler Private Access (ZPA) architecture for the Microsoft Sentine
 This replacement architecture is based on Azure Monitor Agent (AMA).
 
 In textual block form:
-
-`[Cloud Service  ]    [ Single machine or multiple machines                  ]    [Cloud Service          ]`
-`[ZScaler Service] -> [ [ZPA Log Streaming Service] -> [Azure Monitor Agent] ] -> [Log Analytics Workspace]`
+```
+[Cloud Service  ]    [ Single machine or multiple machines                  ]    [Cloud Service          ]
+[ZScaler Service] -> [ [ZPA Log Streaming Service] -> [Azure Monitor Agent] ] -> [Log Analytics Workspace]
+```
 
 # Assumptions and Prerequisites
 
