@@ -1,9 +1,9 @@
 #MakeOrUpdateTable.ps1
 param(
   [string] $CustomTableName="ZPAExtended_CL",
-  [string] $subID = "98634eaf-743f-4628-b84f-45c6b2927455",
-  [string] $workspaceName = "sentinel-test-cyberark",
-  [string] $resourceGroupName = "rg-cyberark-sentinel",
+  [string] $subID = "98634eaf-743f-1234-5678-45c6b2921234",
+  [string] $workspaceName = "sentinel-test",
+  [string] $resourceGroupName = "rg-sentinel-test",
   [string] $tabledefinitionFile = ".\$customtablename.json"
 )
 
