@@ -17,7 +17,7 @@
             }
         },
         "ZPASentinelWorkspaceExternalID": {
-            "defaultValue": "/subscriptions/98634eaf-743f-4628-b84f-45c6b2927455/resourceGroups/rg-cyberark-sentinel/providers/Microsoft.OperationalInsights/workspaces/sentinel-test-cyberark",
+            "defaultValue": "/subscriptions/98634eaf-743f-1234-5678-45c6b2921234/resourceGroups/rg-sentinel-test/providers/Microsoft.OperationalInsights/workspaces/sentinel-test",
             "type": "string",
             "metadata": {
                 "description": "Full path (/subscriptions/id/resourceGroups/rg/.../workspaces/yournamehere) to the Sentinel workspace in which the ZPAExtended_CL table has been created."
