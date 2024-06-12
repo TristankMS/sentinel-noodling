@@ -1,0 +1,14 @@
+#MakeOrUpdateTable.ps1
+param(
+  [string] $CustomTableName="ZPAExtended_CL",
+  [string] $subID = "98634eaf-743f-4628-b84f-45c6b2927455",
+  [string] $workspaceName = "sentinel-test-cyberark",
+  [string] $resourceGroupName = "rg-cyberark-sentinel",
+  [string] $tabledefinitionFile = ".\$customtablename.json"
+)
+
+# May need to authenticate if not already authenticated - run
+# connect-AzAccount -Subscription $subID
+
+$tabledef = get-content $tabledefinitionFile
+Invoke-AzRestMethod -Path "/subscriptions/$subID/resourcegroups/$resourceGroupName/providers/microsoft.operationalinsights/workspaces/$workspaceName/tables/$($CustomTableName)?api-version=2021-12-01-preview" -Method PUT -payload "$tabledef"

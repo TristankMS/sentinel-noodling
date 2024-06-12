@@ -1,0 +1,659 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "ZPADataCollectionRuleName": {
+            "defaultValue": "dcr-zscaler-private-access-extended",
+            "type": "string",
+            "metadata": {
+                "description": "Name of rule to create or update."
+            }
+        },
+        "ZPADataCollectionRuleLocation": {
+            "defaultValue": "centralindia",
+            "type": "string",
+            "metadata": {
+                "description": "Azure region in which to create the rule object. Note: Rule location doesn't matter in practice."
+            }
+        },
+        "ZPASentinelWorkspaceExternalID": {
+            "defaultValue": "/subscriptions/98634eaf-743f-4628-b84f-45c6b2927455/resourceGroups/rg-cyberark-sentinel/providers/Microsoft.OperationalInsights/workspaces/sentinel-test-cyberark",
+            "type": "string",
+            "metadata": {
+                "description": "Full path (/subscriptions/id/resourceGroups/rg/.../workspaces/yournamehere) to the Sentinel workspace in which the ZPAExtended_CL table has been created."
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Insights/dataCollectionRules",
+            "apiVersion": "2022-06-01",
+            "name": "[parameters('ZPADataCollectionRuleName')]",
+            "location": "[parameters('ZPADataCollectionRuleLocation')]",
+            "kind": "Linux",
+            "properties": {
+                "streamDeclarations": {
+                    "Custom-ZPAExtended_CL": {
+                        "columns": [
+                            {
+                                "name": "TimeGenerated",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "LogType",
+                                "type": "string"
+                            },
+                            {
+                                "name": "LogTimestamp",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampAppLearnStart",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampAuthentication",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampCARx",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampCATx",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampConnectionEnd",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampConnectionStart",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampConnectorZENSetupComplete",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampRequestReceiveFinish",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampRequestReceiveHeaderFinish",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampRequestReceiveStart",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampRequestTransmitFinish",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampRequestTransmitStart",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampResponseReceiveFinish",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampResponseReceiveStart",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampResponseTransmitFinish",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampResponseTransmitStart",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampUnAuthentication",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampZENFirstRxClient",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampZENFirstRxConnector",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampZENFirstTxClient",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampZENFirstTxConnector",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampZENLastRxClient",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampZENLastRxConnector",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampZENLastTxClient",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "TimestampZENLastTxConnector",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "AppLearnTime",
+                                "type": "int"
+                            },
+                            {
+                                "name": "ApplicationPort",
+                                "type": "int"
+                            },
+                            {
+                                "name": "BytesRxInterface",
+                                "type": "int"
+                            },
+                            {
+                                "name": "BytesTxInterface",
+                                "type": "int"
+                            },
+                            {
+                                "name": "CAProcessingTime",
+                                "type": "int"
+                            },
+                            {
+                                "name": "ClientPublicPort",
+                                "type": "int"
+                            },
+                            {
+                                "name": "ConnectorPort",
+                                "type": "int"
+                            },
+                            {
+                                "name": "PolicyProcessingTime",
+                                "type": "int"
+                            },
+                            {
+                                "name": "ServerPort",
+                                "type": "int"
+                            },
+                            {
+                                "name": "ServicePort",
+                                "type": "int"
+                            },
+                            {
+                                "name": "TotalBytesRx",
+                                "type": "int"
+                            },
+                            {
+                                "name": "TotalBytesTx",
+                                "type": "int"
+                            },
+                            {
+                                "name": "ZENBytesRxClient",
+                                "type": "int"
+                            },
+                            {
+                                "name": "ZENBytesRxConnector",
+                                "type": "int"
+                            },
+                            {
+                                "name": "ZENBytesTxClient",
+                                "type": "int"
+                            },
+                            {
+                                "name": "ZENBytesTxConnector",
+                                "type": "int"
+                            },
+                            {
+                                "name": "ZENTotalBytesRxClient",
+                                "type": "int"
+                            },
+                            {
+                                "name": "ZENTotalBytesRxConnector",
+                                "type": "int"
+                            },
+                            {
+                                "name": "ZENTotalBytesTxClient",
+                                "type": "int"
+                            },
+                            {
+                                "name": "ZENTotalBytesTxConnector",
+                                "type": "int"
+                            },
+                            {
+                                "name": "ClientLatitude",
+                                "type": "real"
+                            },
+                            {
+                                "name": "ClientLongitude",
+                                "type": "real"
+                            },
+                            {
+                                "name": "Latitude",
+                                "type": "real"
+                            },
+                            {
+                                "name": "Longitude",
+                                "type": "real"
+                            },
+                            {
+                                "name": "ZENLatitude",
+                                "type": "real"
+                            },
+                            {
+                                "name": "ZENLongitude",
+                                "type": "real"
+                            },
+                            {
+                                "name": "AppGroup",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Application",
+                                "type": "string"
+                            },
+                            {
+                                "name": "AuditNewValue",
+                                "type": "string"
+                            },
+                            {
+                                "name": "AuditOldValue",
+                                "type": "string"
+                            },
+                            {
+                                "name": "AuditOperationType",
+                                "type": "string"
+                            },
+                            {
+                                "name": "CertificateCN",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ClientAuditUpdate",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ClientCountryCode",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ClientPrivateIp",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ClientPublicIp",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ClientType",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ClientZEN",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ConnectionID",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ConnectionReason",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ConnectionSetupTime",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ConnectionStatus",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Connector",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ConnectorGroup",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ConnectorIP",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ConnectorStartTime",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ConnectorZEN",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ConnectorZENSetupTime",
+                                "type": "string"
+                            },
+                            {
+                                "name": "CountryCode",
+                                "type": "string"
+                            },
+                            {
+                                "name": "CPUUtilization",
+                                "type": "string"
+                            },
+                            {
+                                "name": "CreationTime",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Customer",
+                                "type": "string"
+                            },
+                            {
+                                "name": "CustomerID",
+                                "type": "string"
+                            },
+                            {
+                                "name": "DefRouteGW",
+                                "type": "string"
+                            },
+                            {
+                                "name": "DiscardsRxInterface",
+                                "type": "string"
+                            },
+                            {
+                                "name": "DiscardsTxInterface",
+                                "type": "string"
+                            },
+                            {
+                                "name": "DoubleEncryption",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ErrorsRxInterface",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ErrorsTxInterface",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Exporter",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Host",
+                                "type": "string"
+                            },
+                            {
+                                "name": "UserStatusHostname",
+                                "type": "string"
+                            },
+                            {
+                                "name": "HostStartTime",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Idp",
+                                "type": "string"
+                            },
+                            {
+                                "name": "InterfaceDefRoute",
+                                "type": "string"
+                            },
+                            {
+                                "name": "InternalReason",
+                                "type": "string"
+                            },
+                            {
+                                "name": "IPProtocol",
+                                "type": "string"
+                            },
+                            {
+                                "name": "MemUtilization",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Method",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ModifiedBy",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ModifiedTime",
+                                "type": "string"
+                            },
+                            {
+                                "name": "NameID",
+                                "type": "string"
+                            },
+                            {
+                                "name": "NumOfInterfaces",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ObjectID",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ObjectName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ObjectType",
+                                "type": "string"
+                            },
+                            {
+                                "name": "PacketsRxInterface",
+                                "type": "string"
+                            },
+                            {
+                                "name": "PacketsTxInterface",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Platform",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Policy",
+                                "type": "string"
+                            },
+                            {
+                                "name": "PosturesHit",
+                                "type": "string"
+                            },
+                            {
+                                "name": "PosturesMiss",
+                                "type": "string"
+                            },
+                            {
+                                "name": "PrimaryDNSResolver",
+                                "type": "string"
+                            },
+                            {
+                                "name": "PrivateIP",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Protocol",
+                                "type": "string"
+                            },
+                            {
+                                "name": "PublicIP",
+                                "type": "string"
+                            },
+                            {
+                                "name": "RequestID",
+                                "type": "string"
+                            },
+                            {
+                                "name": "RequestSize",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ResponseSize",
+                                "type": "string"
+                            },
+                            {
+                                "name": "SAMLAttributes",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Server",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ServerIP",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ServerSetupTime",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ServiceCount",
+                                "type": "string"
+                            },
+                            {
+                                "name": "SessionID",
+                                "type": "string"
+                            },
+                            {
+                                "name": "SessionStatus",
+                                "type": "string"
+                            },
+                            {
+                                "name": "SessionType",
+                                "type": "string"
+                            },
+                            {
+                                "name": "StatusCode",
+                                "type": "string"
+                            },
+                            {
+                                "name": "TotalTimeConnectionSetup",
+                                "type": "int"
+                            },
+                            {
+                                "name": "TotalTimeRequestReceive",
+                                "type": "int"
+                            },
+                            {
+                                "name": "TotalTimeRequestTransmit",
+                                "type": "int"
+                            },
+                            {
+                                "name": "TotalTimeResponseReceive",
+                                "type": "int"
+                            },
+                            {
+                                "name": "TotalTimeResponseTransmit",
+                                "type": "int"
+                            },
+                            {
+                                "name": "TotalTimeServerResponse",
+                                "type": "int"
+                            },
+                            {
+                                "name": "TrustedNetworks",
+                                "type": "string"
+                            },
+                            {
+                                "name": "TrustedNetworksNames",
+                                "type": "string"
+                            },
+                            {
+                                "name": "URL",
+                                "type": "string"
+                            },
+                            {
+                                "name": "User",
+                                "type": "string"
+                            },
+                            {
+                                "name": "UserAgent",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Username",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Version",
+                                "type": "string"
+                            },
+                            {
+                                "name": "XFF",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ZEN",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ZENCountryCode",
+                                "type": "string"
+                            }
+                        ]
+                    }
+                },
+                "dataSources": {
+                    "syslog": [
+                        {
+                            "streams": [
+                                "Microsoft-Syslog"
+                            ],
+                            "facilityNames": [
+                                "local3"
+                            ],
+                            "logLevels": [
+                                "Info"
+                            ],
+                            "name": "sysLogsDataSource-1688419672"
+                        }
+                    ]
+                },
+                "destinations": {
+                    "logAnalytics": [
+                        {
+                            "workspaceResourceId": "[parameters('ZPASentinelWorkspaceExternalID')]",
+                            "name": "la--238236415"
+                        }
+                    ]
+                },
+                "dataFlows": [
+                    {
+                        "streams": [
+                            "Microsoft-Syslog"
+                        ],
+                        "destinations": [
+                            "la--238236415"
+                        ],
+                        "transformKql": "source | where ProcessName=='zpalss' | parse SyslogMessage with Part1:string '\"AuditOldValue\"' A1:string '}\",' Part2:string '\"AuditNewValue\"' A2:string '}\",' Part3:string | extend modded = strcat(Part1,Part2, Part3) | extend AuditOldValue = extract('{.*({.*}).*({.*}).*}', 1, SyslogMessage)  | extend AuditNewValue = extract('{.*({.*}).*({.*}).*}', 2, SyslogMessage) | extend PM = iif(isempty(AuditNewValue),parse_json(SyslogMessage),parse_json(modded)) | project TimeGenerated, PM, SyslogMessage, AuditNewValue, AuditOldValue | extend  ClientPublicIp=tostring(PM.ClientPublicIp), ServerIP=tostring(PM.ServerIP), Username=tostring(PM.Username), ConnectionStatus=tostring(PM.ConnectionStatus), SessionStatus=tostring(PM.SessionStatus), InternalReason=tostring(PM.InternalReason), SessionID=tostring(PM.SessionID), ClientCountryCode=tostring(PM.ClientCountryCode), CountryCode=tostring(PM.CountryCode), ZENCountryCode=tostring(PM.ZENCountryCode), PublicIP=tostring(PM.PublicIP), User=tostring(PM.User), LogType=tostring(PM.LogType), AppGroup=tostring(PM.AppGroup), Application=tostring(PM.Application), AuditOperationType=tostring(PM.AuditOperationType), CertificateCN=tostring(PM.CertificateCN), ClientAuditUpdate=tostring(PM.ClientAuditUpdate), ClientPrivateIp=tostring(PM.ClientPrivateIp), ClientType=tostring(PM.ClientType), ClientZEN=tostring(PM.ClientZEN), ConnectionID=tostring(PM.ConnectionID), ConnectionReason=tostring(PM.ConnectionReason), ConnectionSetupTime=tostring(PM.ConnectionSetupTime), Connector=tostring(PM.Connector), ConnectorGroup=tostring(PM.ConnectorGroup), ConnectorIP=tostring(PM.ConnectorIP), ConnectorStartTime=tostring(PM.ConnectorStartTime), ConnectorZEN=tostring(PM.ConnectorZEN), ConnectorZENSetupTime=tostring(PM.ConnectorZENSetupTime), CPUUtilization=tostring(PM.CPUUtilization), CreationTime=tostring(PM.CreationTime), Customer=tostring(PM.Customer), CustomerID=tostring(PM.CustomerID), DefRouteGW=tostring(PM.DefRouteGW), DiscardsRxInterface=tostring(PM.DiscardsRxInterface), DiscardsTxInterface=tostring(PM.DiscardsTxInterface), DoubleEncryption=tostring(PM.DoubleEncryption), ErrorsRxInterface=tostring(PM.ErrorsRxInterface), ErrorsTxInterface=tostring(PM.ErrorsTxInterface), Exporter=tostring(PM.Exporter), Host=tostring(PM.Host), UserStatusHostname=tostring(PM.Hostname), HostStartTime=tostring(PM.HostStartTime), Idp=tostring(PM.Idp), InterfaceDefRoute=tostring(PM.InterfaceDefRoute), IPProtocol=tostring(PM.IPProtocol), MemUtilization=tostring(PM.MemUtilization), Method=tostring(PM.Method), ModifiedBy=tostring(PM.ModifiedBy), ModifiedTime=tostring(PM.ModifiedTime), NameID=tostring(PM.NameID), NumOfInterfaces=tostring(PM.NumOfInterfaces), ObjectID=tostring(PM.ObjectID), ObjectName=tostring(PM.ObjectName), ObjectType=tostring(PM.ObjectType), PacketsRxInterface=tostring(PM.PacketsRxInterface), PacketsTxInterface=tostring(PM.PacketsTxInterface), Platform=tostring(PM.Platform), Policy=tostring(PM.Policy), PosturesHit=tostring(PM.PosturesHit), PosturesMiss=tostring(PM.PosturesMiss), PrimaryDNSResolver=tostring(PM.PrimaryDNSResolver), PrivateIP=tostring(PM.PrivateIP), Protocol=tostring(PM.Protocol), RequestID=tostring(PM.RequestID), RequestSize=tostring(PM.RequestSize), ResponseSize=tostring(PM.ResponseSize), SAMLAttributes=tostring(PM.SAMLAttributes), Server=tostring(PM.Server), ServerSetupTime=tostring(PM.ServerSetupTime), ServiceCount=tostring(PM.ServiceCount), SessionType=tostring(PM.SessionType), StatusCode=tostring(PM.StatusCode), TrustedNetworks=tostring(PM.TrustedNetworks), TrustedNetworksNames=tostring(PM.TrustedNetworksNames), URL=tostring(PM.URL), UserAgent=tostring(PM.UserAgent), Version=tostring(PM.Version), XFF=tostring(PM.XFF), ZEN=tostring(PM.ZEN)  | extend  ZENTotalBytesTxClient=toint(PM.ZENTotalBytesTxClient), ApplicationPort=toint(PM.ApplicationPort), ServerPort=toint(PM.ServerPort), ServicePort=toint(PM.ServicePort), ZENTotalBytesRxClient=toint(PM.ZENTotalBytesRxClient), ClientPublicPort=toint(PM.ClientPublicPort), AppLearnTime=toint(PM.AppLearnTime), BytesRxInterface=toint(PM.BytesRxInterface), BytesTxInterface=toint(PM.BytesTxInterface), CAProcessingTime=toint(PM.CAProcessingTime), ConnectorPort=toint(PM.ConnectorPort), PolicyProcessingTime=toint(PM.PolicyProcessingTime), TotalBytesRx=toint(PM.TotalBytesRx), TotalBytesTx=toint(PM.TotalBytesTx), ZENBytesRxClient=toint(PM.ZENBytesRxClient), ZENBytesRxConnector=toint(PM.ZENBytesRxConnector), ZENBytesTxClient=toint(PM.ZENBytesTxClient), ZENBytesTxConnector=toint(PM.ZENBytesTxConnector), ZENTotalBytesRxConnector=toint(PM.ZENTotalBytesRxConnector), ZENTotalBytesTxConnector=toint(PM.ZENTotalBytesTxConnector), TotalTimeConnectionSetup=toint(PM.TotalTimeConnectionSetup), TotalTimeRequestReceive=toint(PM.TotalTimeRequestReceive), TotalTimeRequestTransmit=toint(PM.TotalTimeRequestTransmit), TotalTimeResponseReceive=toint(PM.TotalTimeResponseReceive), TotalTimeResponseTransmit=toint(PM.TotalTimeResponseTransmit), TotalTimeServerResponse=toint(PM.TotalTimeServerResponse)  | extend  LogTimestamp=todatetime(PM.LogTimestamp), TimestampAppLearnStart=todatetime(PM.TimestampAppLearnStart), TimestampAuthentication=todatetime(PM.TimestampAuthentication), TimestampCARx=todatetime(PM.TimestampCARx), TimestampCATx=todatetime(PM.TimestampCATx), TimestampConnectionEnd=todatetime(PM.TimestampConnectionEnd), TimestampConnectionStart=todatetime(PM.TimestampConnectionStart), TimestampConnectorZENSetupComplete=todatetime(PM.TimestampConnectorZENSetupComplete), TimestampRequestReceiveFinish=todatetime(PM.TimestampRequestReceiveFinish), TimestampRequestReceiveHeaderFinish=todatetime(PM.TimestampRequestReceiveHeaderFinish), TimestampRequestReceiveStart=todatetime(PM.TimestampRequestReceiveStart), TimestampRequestTransmitFinish=todatetime(PM.TimestampRequestTransmitFinish), TimestampRequestTransmitStart=todatetime(PM.TimestampRequestTransmitStart), TimestampResponseReceiveFinish=todatetime(PM.TimestampResponseReceiveFinish), TimestampResponseReceiveStart=todatetime(PM.TimestampResponseReceiveStart), TimestampResponseTransmitFinish=todatetime(PM.TimestampResponseTransmitFinish), TimestampResponseTransmitStart=todatetime(PM.TimestampResponseTransmitStart), TimestampUnAuthentication=todatetime(PM.TimestampUnAuthentication), TimestampZENFirstRxClient=todatetime(PM.TimestampZENFirstRxClient), TimestampZENFirstRxConnector=todatetime(PM.TimestampZENFirstRxConnector), TimestampZENFirstTxClient=todatetime(PM.TimestampZENFirstTxClient), TimestampZENFirstTxConnector=todatetime(PM.TimestampZENFirstTxConnector), TimestampZENLastRxClient=todatetime(PM.TimestampZENLastRxClient), TimestampZENLastRxConnector=todatetime(PM.TimestampZENLastRxConnector), TimestampZENLastTxClient=todatetime(PM.TimestampZENLastTxClient), TimestampZENLastTxConnector=todatetime(PM.TimestampZENLastTxConnector)    | extend  ClientLatitude=toreal(PM.ClientLatitude), ClientLongitude=toreal(PM.ClientLongitude), Latitude=toreal(PM.Latitude), Longitude=toreal(PM.Longitude), ZENLatitude=toreal(PM.ZENLatitude), ZENLongitude=toreal(PM.ZENLongitude)   | extend LogType = case( columnifexists('Protocol', '') != '', 'BrowserAccess', columnifexists('Server', '') != '', 'UserActivity', columnifexists('ClientType', '') != '', 'UserStatus', not(isempty(AuditOperationType)), 'Audit', columnifexists('SessionType', '') != '', 'AppConnector',  'Unknown' )  | extend AuditNewValue = iif((LogType in ('Unknown')),tostring(PM),AuditNewValue)  | extend SavedTime = TimeGenerated  | extend altSplit = split(PM,'\"')  | extend altModified = todatetime(altSplit[3])  | extend ModDate = todatetime(ModifiedTime)  | extend ModifiedTime = iif(isnull(ModDate),tostring(altModified),tostring(ModDate))  | extend LogDate = todatetime(LogTimestamp)  | extend ModifiedDate = todatetime(ModifiedTime)  | extend ConsoliDate = iif(isnull(ModifiedDate),(iif(isnull(LogDate),SavedTime,LogDate)),ModifiedDate)  | extend TimeGenerated = iif(isnull(ConsoliDate), now(), ConsoliDate)  | project-away SyslogMessage, ModDate, LogDate, SavedTime, altSplit, altModified, PM, ConsoliDate ",
+                        "outputStream": "Custom-ZPAExtended_CL"
+                    },
+                    {
+                        "streams": [
+                            "Microsoft-Syslog"
+                        ],
+                        "destinations": [
+                            "la--238236415"
+                        ],
+                        "transformKql": "source | where ProcessName=='zpaaudit' | extend PM = parse_json(SyslogMessage) | project TimeGenerated, PM, SyslogMessage | extend AuditNewValue = SyslogMessage | project-away PM, SyslogMessage " ,
+                        "outputStream": "Custom-ZPAExtended_CL"
+                    }
+                ]
+            }
+        }
+    ]
+}

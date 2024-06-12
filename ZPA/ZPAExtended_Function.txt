@@ -1,0 +1,20 @@
+ZPAExtended_CL
+| extend EventVendor="Zscaler",
+        EventProduct="Private Access"
+| extend
+        EventResult=column_ifexists('InternalReason', column_ifexists('ConnectionStatus', '')),
+        DvcAction=column_ifexists('ConnectionStatus', column_ifexists('SessionStatus', '')),
+        DstUserName=column_ifexists('Username', column_ifexists('User', '')),
+        DstPortNumber=column_ifexists('ServicePort', column_ifexists('ServerPort', column_ifexists('ApplicationPort', ''))),
+        SrcBytes=column_ifexists('ZENTotalBytesRxClient', column_ifexists('TotalBytesRx', '')),
+        DstBytes=column_ifexists('ZENTotalBytesTxClient', column_ifexists('TotalBytesTx', '')),
+        SrcGeoCountry=iff(CountryCode<>"", CountryCode, ClientCountryCode)
+        | extend
+         SrcIpAddr = iff(PublicIP<>"", PublicIP, ConnectorIP )
+        , DstIpAddr = iff(ServerIP<>"", ServerIP, Host)
+        , NetworkSessionId = column_ifexists('SessionID','')
+        , HttpHost = column_ifexists('Host', '')
+        , DstHostname = column_ifexists('Host','')
+        | extend 
+        Dst=iff(DstHostname<>"",DstHostname,DstIpAddr)
+| project-reorder TimeGenerated, LogType, EventResult, NetworkSessionId, Dst, DstHostname, SrcIpAddr, DstIpAddr, SrcGeoCountry, DvcAction, DstUserName, DstPortNumber, SrcBytes, DstBytes

@@ -38,7 +38,7 @@ If you're not getting data:
 - If logs aren't being ingested, use standard Azure Monitor Agent troubleshooting...
 - Experience has shown that custom text log collection is an "as writes complete" proposition, so you may need to generate some load in order to test the logging.
   Using PowerShell locally:
-  - `Send-MailMessage -SmtpServer localhost -From "test-$($env:Computername)@example.com" -To "user@example.com" -Subject "Test from $($env:Computername) $(++$i)"  -Body "Just checking" # NB probably helps for the "To" address to work or be homed on the server if it's not a relay...`
+  - `Send-MailMessage -SmtpServer localhost -From "test-$($env:Computername)@example.com" -To "user+test$(++$i)@example.com" -Subject "Test $i from $($env:Computername)"  -Body "Just checking" # NB probably helps for the "To" address to work or be homed on the server if it's not a relay...`
 
 ## SMTPSVC Parser Function for SMTPSVC_CL
 
