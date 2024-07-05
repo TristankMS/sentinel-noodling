@@ -2,7 +2,7 @@
 
 This implementation has rough edges, but gets to the point of Log Analytics ingestion of ZPA events in a(n over-) schematized table, with excellent performance, while allowing reuse of existing content.
 
-Primary instruction doc is [here](/TristankMS/sentinel-noodling/blob/main/ZPA/ZScaler%20Private%20Access%20-%20Build%20Process.md).
+Primary instruction doc is [here](ZScaler%20Private%20Access%20-%20Build%20Process.md).
 
 ## Future
 
