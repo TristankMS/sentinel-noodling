@@ -1,0 +1,341 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Let's Make An IIS W3C Log DCR!\n---\nA workbook to help transform an IIS W3C log for either the W3CIISLog table or the ASimWebSessionLogs table in Sentinel. Most likely using Azure Monitor Agent with Custom Logs, but portions may be useful for other use cases.\n\n- kqlTransform for W3CIISLog [Done]\n- kqlTransform for W3CIISLog misusing a predefined column for X-Forwarded-For (XFF) [Done]\n- kqlTransform for ASimWebSessionLogs [in progress]\n- DCR fragment for W3CIISLog\n- DCR fragment for ASimWebSessionLogs\n\n\nAny transformKql is _entirely ordering-sensitive_, so assume it will need standardized logging settings for all hosts and sites to which it applies.\n\nAny columns not shown with an index in TargetState aren't in the logging header, so consider adjusting & standardizing that first if necessary. Edit the target mappings table to add columns if needed.\n\nDate and Time are used to populate TimeGenerated directly as part of the template, so are excluded from the choosers."
+      },
+      "name": "text - 2"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "8c7c7735-6025-470c-9f0c-53538d49229c",
+            "version": "KqlParameterItem/1.0",
+            "name": "FieldsList",
+            "type": 1,
+            "description": "the W3C Fields directive for the log in question",
+            "isRequired": true,
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": "#Fields: date time s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) cs(Referer) sc-status sc-substatus sc-win32-status time-taken x-forwarded-for",
+            "label": "#Fields line"
+          }
+        ],
+        "style": "formHorizontal",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "Enter field list"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "88041f30-7812-431c-9af9-63d7e42b8ba0",
+            "version": "KqlParameterItem/1.0",
+            "name": "LogLine",
+            "type": 1,
+            "description": "A sample log line in the format specified above",
+            "isRequired": true,
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": "2025-06-13 07:08:57 ::1 GET / - 80 - ::1 Mozilla/5.0+(Windows+NT+10.0;+Win64;+x64)+AppleWebKit/537.36+(KHTML,+like+Gecko)+Chrome/137.0.0.0+Safari/537.36+Edg/137.0.0.0 - 200 0 0 800 10.30.1.8",
+            "label": "Sample log line"
+          }
+        ],
+        "style": "formHorizontal",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "Log Line Sample"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "9833e146-6c0f-49a6-a6d2-0ea951c3aa2b",
+            "version": "KqlParameterItem/1.0",
+            "name": "TargetFormat",
+            "label": "Target Format",
+            "type": 2,
+            "description": "Picks the output format",
+            "isRequired": true,
+            "query": "datatable(TargetFormat:string)[\r\n \"W3CIISLog\",\r\n \"ASimWebSessionLogs\"\r\n]",
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": "ASimWebSessionLogs"
+          },
+          {
+            "id": "68bcc16a-0b42-41ce-b1f8-00323add5420",
+            "version": "KqlParameterItem/1.0",
+            "name": "EventVendor",
+            "label": "Event Vendor",
+            "type": 1,
+            "isRequired": true,
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": "Microsoft"
+          },
+          {
+            "id": "cb3148f3-d7ee-465c-a40d-5b603e3c19f3",
+            "version": "KqlParameterItem/1.0",
+            "name": "EventProduct",
+            "label": "Event Product",
+            "type": 1,
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": "IIS"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "customWidth": "100",
+      "name": "parameters - 12"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "// translate the W3C Fields directive into a set of columns.\r\nlet FieldsList = \"{FieldsList}\";\r\nprint FieldsList\r\n| extend sf = split(FieldsList, \" \")\r\n| project-away print_0\r\n| mv-expand sf\r\n| serialize\r\n| extend idx = row_number(0)-1\r\n| where idx > -1",
+        "size": 0,
+        "title": "Field indexes in #Fields directive",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "customWidth": "20",
+      "name": "LogIndexes"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "c4a0d653-d4e9-4970-b63c-1eb284735cb0",
+            "version": "KqlParameterItem/1.0",
+            "name": "FieldForXff",
+            "label": "Jam X-Forwarded-For into",
+            "type": 2,
+            "description": "X-Forwarded-For doesn't exist in the W3C IIS Logs schema, but you can optionally put it somewhere else...",
+            "query": "datatable(XffTargetField:string)[\r\n  \"Description\",\r\n  \"Confidence\"\r\n  ]",
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces",
+            "value": "Description"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "conditionalVisibility": {
+        "parameterName": "TargetFormat",
+        "comparison": "isEqualTo",
+        "value": "W3CIISLog"
+      },
+      "customWidth": "16",
+      "name": "OptionalXffStuffing"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "// w3c format\r\nlet MapW3CIISLog= datatable(ColName:string,ColType:string)[\r\n\"AzureDeploymentID\",\"string\",\r\n\"_BilledSize\",\"real\",\r\n\"cIP\",\"string\",\r\n\"Computer\",\"string\",\r\n\"Confidence\",\"string\",\r\n\"csBytes\",\"long\",\r\n\"csCookie\",\"string\",\r\n\"csHost\",\"string\",\r\n\"csMethod\",\"string\",\r\n\"csReferer\",\"string\",\r\n\"csUriQuery\",\"string\",\r\n\"csUriStem\",\"string\",\r\n\"csUserAgent\",\"string\",\r\n\"csUserName\",\"string\",\r\n\"csVersion\",\"string\",\r\n\"Description\",\"string\",\r\n\"FirstReportedDateTime\",\"string\",\r\n\"IndicatorThreatType\",\"string\",\r\n\"IsActive\",\"string\",\r\n\"_IsBillable\",\"string\",\r\n\"LastReportedDateTime\",\"string\",\r\n\"MaliciousIP\",\"string\",\r\n\"ManagementGroupName\",\"string\",\r\n\"RemoteIPCountry\",\"string\",\r\n\"RemoteIPLatitude\",\"real\",\r\n\"RemoteIPLongitude\",\"real\",\r\n\"_ResourceId\",\"string\",\r\n\"Role\",\"string\",\r\n\"RoleInstance\",\"string\",\r\n\"scBytes\",\"long\",\r\n\"scStatus\",\"string\",\r\n\"scSubStatus\",\"string\",\r\n\"scWin32Status\",\"string\",\r\n\"Severity\",\"int\",\r\n\"sIP\",\"string\",\r\n\"SourceSystem\",\"string\",\r\n\"sPort\",\"int\",\r\n\"sSiteName\",\"string\",\r\n\"StorageAccount\",\"string\",\r\n\"_SubscriptionId\",\"string\",\r\n\"TimeGenerated\",\"datetime\",\r\n\"TimeTaken\",\"long\",\r\n\"TLPLevel\",\"string\",\r\n\"Type\",\"string\"\r\n];\r\nMapW3CIISLog",
+        "size": 0,
+        "title": "Available W3CIISLog Fields",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "gridSettings": {
+          "sortBy": [
+            {
+              "itemKey": "ColName",
+              "sortOrder": 1
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "ColName",
+            "sortOrder": 1
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "TargetFormat",
+        "comparison": "isEqualTo",
+        "value": "W3CIISLog"
+      },
+      "customWidth": "24",
+      "name": "TargetLogFields"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let TableMap =  datatable(srcField:string, dstW3C:string, dstASIM:string, ColType:string)[\r\n  \"date\",\"LogDate\",\"LogDate\",\"string\",\r\n  \"time\",\"LogTime\",\"LogTime\",\"string\",\r\n  \"s-ip\",\"sIP\",\"DvcIpAddr\",\"string\",\r\n  \"cs-method\",\"csMethod\",\"HttpRequestMethod\",\"string\",\r\n  \"cs-uri-stem\",\"csUriStem\",\"LogUriStem\",\"string\",\r\n  \"cs-uri-query\",\"csUriQuery\",\"LogUriQuery\",\"string\",\r\n  \"s-port\",\"sPort\",\"DstPortNumber\",\"int\",\r\n  \"s-computername\",\"Computer\",\"Dvc\",\"string\",\r\n  \"cs-username\",\"csUserName\",\"SrcUserName\",\"string\",\r\n  \"c-ip\",\"cIP\",\"SrcIpAddr\",\"string\",\r\n  \"cs(User-Agent)\",\"csUserAgent\",\"HttpUserAgent\",\"string\",\r\n  \"cs(Referer)\",\"csReferer\",\"HttpReferrer\",\"string\",\r\n  \"sc-status\",\"scStatus\",\"EventResultDetails\",\"string\",\r\n  \"sc-substatus\",\"scSubStatus\",\"EventOriginalResultDetails\",\"string\",\r\n  \"sc-win32-status\",\"scWin32Status\",\"EventOriginalSubType\",\"string\",\r\n  \"time-taken\",\"TimeTaken\",\"NetworkDuration\",\"int\",\r\n  \"s-sitename\",\"sSiteName\",\"DstAppName\",\"string\",\r\n  \"cs-Bytes\",\"csBytes\",\"SrcBytes\",\"int\",\r\n  \"sc-Bytes\",\"scBytes\",\"DstBytes\",\"int\",\r\n  \"cs-Host\",\"csHost\",\"HttpHost\",\"string\",\r\n  \"cs-Version\",\"csVersion\",\"HttpVersion\",\"string\",\r\n  \"x-forwarded-for\",\"{FieldForXff}\",\"HttpRequestXff\",\"string\"\r\n];\r\nTableMap\r\n| project srcField, dstField = iff(\"{TargetFormat}\" == \"W3CIISLog\", dstW3C, dstASIM), ColType\r\n",
+        "size": 0,
+        "title": "Target Field Mappings ({TargetFormat})",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "customWidth": "24",
+      "name": "TargetColumnsAll"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "### Field selection\r\nSelect the fields to ingest or _Select All_. Only fields with a mapping will be ingested. Once fields are selected, click the generated transformKql statement to try it out."
+      },
+      "name": "text - 13"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "{\"version\":\"Merge/1.0\",\"merges\":[{\"id\":\"0ba7163e-eec8-4e4e-9654-5ffcbdb6221b\",\"mergeType\":\"outer\",\"leftTable\":\"LogIndexes\",\"rightTable\":\"TargetColumnsAll\",\"leftColumn\":\"sf\",\"rightColumn\":\"srcField\"}],\"projectRename\":[{\"originalName\":\"[LogIndexes].sf\",\"mergedName\":\"sf\",\"fromId\":\"0ba7163e-eec8-4e4e-9654-5ffcbdb6221b\"},{\"originalName\":\"[LogIndexes].idx\",\"mergedName\":\"idx\",\"fromId\":\"0ba7163e-eec8-4e4e-9654-5ffcbdb6221b\"},{\"originalName\":\"[TargetColumnsAll].dstField\",\"mergedName\":\"dstField\",\"fromId\":\"0ba7163e-eec8-4e4e-9654-5ffcbdb6221b\"},{\"originalName\":\"[TargetColumnsAll].ColType\",\"mergedName\":\"ColType\",\"fromId\":\"unknown\"},{\"originalName\":\"[TargetColumns].srcField\"},{\"originalName\":\"[W3CIISLogFields].ColName\"},{\"originalName\":\"[TargetColumnsW3C].srcField\"},{\"originalName\":\"[TargetColumnsW3C].dstField\"},{\"originalName\":\"[TargetLogFields].ColName\"},{\"originalName\":\"[W3CIndexes].sf\"},{\"originalName\":\"[TargetColumnsAll].srcField\"}]}",
+        "size": 0,
+        "title": "Merged Fields and Indexes (select all)",
+        "exportMultipleValues": true,
+        "exportedParameters": [
+          {
+            "parameterName": "AllFields",
+            "parameterType": 1,
+            "delimiter": ";",
+            "quote": ""
+          }
+        ],
+        "showExportToExcel": true,
+        "queryType": 7
+      },
+      "customWidth": "38",
+      "name": "TargetState"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let Items='{AllFields}';\r\nlet kqlPreamble=\"source | extend col = split(RawData, ' ')\\n|extend LogDate = tostring(col[0]), LogTime=tostring(col[1])\\n|extend TimeGenerated = todatetime(strcat(LogDate, ' ', LogTime))\\n|project-away LogDate, LogTime \";\r\nlet kqlASIMPreamble=\"| extend EventVendor='Microsoft', EventProduct='IIS' \";\r\nlet initialExtend=\"| extend \";\r\nlet kqlPostamble=\"\\n| project-away RawData, col\";\r\nlet kqlASIMPostamble=\"\\n|extend LogUriQuery = iff(LogUriQuery == '-', '', LogUriQuery), HttpReferrer = iff(HttpReferrer == '-', '', HttpReferrer) | extend Url=strcat(LogUriStem,LogUriQuery)\\n| extend EventStartTime = ( (TimeGenerated) - (NetworkDuration * 1ms))\\n| project-away LogUriStem, LogUriQuery\";\r\nprint Items\r\n| extend Thing=todynamic(Items)\r\n| extend SplitItems=split(Thing, \";\")\r\n| project-away Thing, print_0\r\n| mv-expand SI = SplitItems\r\n| extend mid = todynamic(tostring(SI))\r\n| project-away SI, SplitItems\r\n| extend idx = toint(mid.idx), col=tostring(mid.dstField)\r\n| where not(isempty(idx)) and not(isempty(col)) // no fields you can't map!\r\n| where col !in (\"TimeGenerated\",\"LogTime\",\"LogDate\") // handled already\r\n| extend kqlString = strcat(tostring(mid.dstField), \"=to\", tostring(mid.ColType), \"(col[\", tostring(mid.idx), \"])\")\r\n| order by idx asc \r\n| summarize combined = strcat_array(make_list(kqlString), \",\\n\")\r\n| extend transformKql = iff(\"{TargetFormat}\"==\"ASimWebSessionLogs\",strcat(kqlPreamble, kqlASIMPreamble, initialExtend, combined, kqlPostamble,kqlASIMPostamble),strcat(kqlPreamble, initialExtend, combined, kqlPostamble))\r\n| project-away combined",
+        "size": 4,
+        "showAnalytics": true,
+        "title": "transformKql - click to select",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "exportFieldName": "transformKql",
+        "exportParameterName": "transformKql",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "transformKql",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "100%"
+              }
+            }
+          ],
+          "sortBy": [
+            {
+              "itemKey": "transformKql",
+              "sortOrder": 1
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "transformKql",
+            "sortOrder": 1
+          }
+        ]
+      },
+      "customWidth": "58",
+      "name": "query - 6 - Copy"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let DateTimeNow = now();\r\nlet DataLine = \"{LogLine}\";\r\nlet source=print \"Hi\" | extend TimeGenerated = DateTimeNow, RawData=DataLine | project-away print_0;\r\n{transformKql}",
+        "size": 4,
+        "showAnalytics": true,
+        "title": "Parsed sample log row",
+        "noDataMessage": "Please select the columns and the transformKql statement above",
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "exportFieldName": "transformKql",
+        "exportParameterName": "transformKql",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "query - 6 - Copy - Copy"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "### transformKql\r\nAfter clicking the transformKql row above, the actual text should appear for inspection below.\r\n```\r\n{transformKql}\r\n```"
+      },
+      "customWidth": "48",
+      "name": "text - 8"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let Items='{AllFields}';\r\nlet kqlPreamble=\"source | extend col = split(RawData, ' ') | extend LogDate = tostring(col[0]), LogTime=tostring(col[1]) | extend TimeGenerated = todatetime(strcat(LogDate, ' ', LogTime)) | extend \";\r\nlet kqlPostamble=\" | extend TimeGenerated = todatetime(strcat(tostring(col[0]), ' ', tostring(col[1])))\";\r\nprint Items\r\n| extend Thing=todynamic(Items)\r\n//| extend sf_= tostring(Thing.sf)\r\n| extend SplitItems=split(Thing, \";\")\r\n| project-away Thing, print_0\r\n| mv-expand SI = SplitItems\r\n| extend mid = todynamic(tostring(SI))\r\n| project-away SI, SplitItems\r\n| extend idx = toint(mid.idx), col=tostring(mid.dstField)\r\n| where not(isempty( idx))\r\n| where col != \"TimeGenerated\" // handled already\r\n| extend kqlString = strcat(\" \", tostring(mid.dstField), \"=to\", tostring(mid.ColType), \"(col[\", tostring(mid.idx), \"]),\")\r\n| order by idx asc ",
+        "size": 0,
+        "showAnalytics": true,
+        "timeContext": {
+          "durationMs": 86400000
+        },
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "conditionalVisibility": {
+        "parameterName": "ShowAllSteps",
+        "comparison": "isEqualTo",
+        "value": "true"
+      },
+      "customWidth": "48",
+      "name": "query - 6"
+    }
+  ],
+  "fallbackResourceIds": [
+    "/subscriptions/6e6038ad-a5e0-43b8-996d-4e0138f8c858/resourcegroups/rg-sentinel/providers/microsoft.operationalinsights/workspaces/home-sentinel"
+  ],
+  "fromTemplateId": "sentinel-UserWorkbook",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
