@@ -1,0 +1,107 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dataCollectionRuleName": {
+            "metadata": {
+                "description": "No spaces (eg. dcr-win-iis-smtp)"
+            },
+            "defaultValue": "dcr-win-iis-smtp",
+            "type": "string"
+        },
+        "didYouKnow":{
+            "type": "string",
+            "defaultValue": "DCE, DCR, LAW must be in-region. Target Resources can be anywhere."
+        },
+        "dataCollectionEndpoint": {
+            "metadata": {
+                "description": "full resource ID of DCE. ID is copiable from Overview -> JSON View -> id"
+            },
+            "defaultValue": "/subscriptions/ID/resourceGroups/RG/providers/Microsoft.Insights/dataCollectionEndpoints/dce-blah",
+            "type": "string"
+        },
+        "workspaceId": {
+            "metadata": {
+                "description": "full resource ID of Log Analytics workspace (/subscriptions/etc) - value from Properties"
+            },
+            "defaultValue": "/subscriptions/ID/resourceGroups/RG/providers/Microsoft.OperationalInsights/workspaces/sentinel-ws",
+            "type": "string"
+        }
+    },
+    "variables": {
+		"ruleName":"iisw3svclogcustomfile--0001"
+	},
+    "resources": [
+        {
+            "type": "Microsoft.Insights/dataCollectionRules",
+            "apiVersion": "2022-06-01",
+            "name": "[parameters('dataCollectionRuleName')]",
+            "location": "[resourceGroup().location]",
+            "kind": "Windows",
+            "properties": {
+                "dataCollectionEndpointId": "[parameters('dataCollectionEndpoint')]",
+                "streamDeclarations": {
+                    "Custom-W3SVC_CL": {
+                        "columns": [
+                            {
+                                "name": "TimeGenerated",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "RawData",
+                                "type": "string"
+                            }
+                        ]
+                    }
+                },
+                "dataSources": {
+                    "logFiles": [
+                        {
+                            "streams": [
+                                "Custom-W3SVC_CL"
+                            ],
+                            "filePatterns": [
+                                "C:\\InetPub\\Logs\\LogFiles\\W3SVC1\\*.log",
+                                "C:\\InetPub\\Logs\\LogFiles\\W3SVC2\\*.log",
+                                "C:\\InetPub\\Logs\\LogFiles\\W3SVC3\\*.log",
+                                "C:\\InetPub\\Logs\\LogFiles\\W3SVC4\\*.log",
+                                "C:\\InetPub\\Logs\\LogFiles\\W3SVC5\\*.log",
+                                "C:\\InetPub\\Logs\\LogFiles\\W3SVC6\\*.log",
+                                "C:\\InetPub\\Logs\\LogFiles\\W3SVC7\\*.log",
+                                "C:\\InetPub\\Logs\\LogFiles\\W3SVC8\\*.log",
+                                "C:\\InetPub\\Logs\\LogFiles\\W3SVC9\\*.log""
+                            ],
+                            "format": "text",
+                            "settings": {
+                                "text": {
+                                    "recordStartTimestampFormat": "ISO 8601"
+                                }
+                            },
+                            "name": "W3SVC_Custom_CL"
+                        }
+                    ]
+                },
+                "destinations": {
+                    "logAnalytics": [
+                        {
+                            "workspaceResourceId": "[parameters('workspaceId')]",
+                            "name": "[variables('ruleName')]"
+                        }
+                    ]
+                },
+                "dataFlows": [
+                    {
+                        "streams": [
+                            "Custom-W3SVC_CL"
+                        ],
+                        "destinations": [
+                            "[variables('ruleName')]"
+                        ],
+                        "transformKql": "source",
+                        "outputStream": "Microsoft-W3CIISLog"
+                    }
+                ]
+            }
+        }
+    ]
+}
