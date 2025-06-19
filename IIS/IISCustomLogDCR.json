@@ -69,7 +69,7 @@
                                 "C:\\InetPub\\Logs\\LogFiles\\W3SVC6\\*.log",
                                 "C:\\InetPub\\Logs\\LogFiles\\W3SVC7\\*.log",
                                 "C:\\InetPub\\Logs\\LogFiles\\W3SVC8\\*.log",
-                                "C:\\InetPub\\Logs\\LogFiles\\W3SVC9\\*.log""
+                                "C:\\InetPub\\Logs\\LogFiles\\W3SVC9\\*.log"
                             ],
                             "format": "text",
                             "settings": {
