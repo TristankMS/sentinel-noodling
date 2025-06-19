@@ -4,9 +4,9 @@
     "parameters": {
         "dataCollectionRuleName": {
             "metadata": {
-                "description": "No spaces (eg. dcr-win-iis-smtp)"
+                "description": "No spaces (eg. dcr-win-iis-w3svc-custom)"
             },
-            "defaultValue": "dcr-win-iis-smtp",
+            "defaultValue": "dcr-win-iis-w3svc-custom",
             "type": "string"
         },
         "didYouKnow":{
